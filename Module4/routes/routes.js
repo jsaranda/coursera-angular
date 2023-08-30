@@ -28,9 +28,10 @@
                 templateUrl: 'templates/items.template.html',
                 controller: 'itemsController as itemsCtrl',
                 params: {
-                    categoryShortName: null,
-                    categoryName: null
-                },
+                categoryShortName: null,
+                categoryName: null
+                    
+                        },
                 resolve: {
                     items: ['$stateParams', 'MenuDataService', function($stateParams, MenuDataService) {
                         return MenuDataService.getItemsForCategory($stateParams.categoryShortName);
