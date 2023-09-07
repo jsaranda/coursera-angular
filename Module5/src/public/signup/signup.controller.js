@@ -1,38 +1,41 @@
-(function() {
-    'use strict';
+(function () {
+    "use strict";
+    
+    angular.module('public')
+    .controller('SignUpController', SignUpController);
+    
+    SignUpController.$inject = ['UserService', 'MenuService'];
+    function SignUpController(UserService, MenuService) {
+      var signUpCtrl = this;
+      signUpCtrl.user = UserService.getUser();
+      signUpCtrl.dishShortName = "";
+      signUpCtrl.registered = signUpCtrl.user != null;
+      signUpCtrl.favoriteError = "";
 
-    var signupController = function(MenuService) {
-        var vm = this;
-
-        vm.user = {};
-        vm.favoriteDish = {};
-
-        vm.showError = false;       // When this value is true error about the favorite dish wiil be shown
-        vm.showMessage = false;     // When this value is true message about successfull signup will be shown
-
-        vm.signup = function(form) {
-            vm.showError = false;
-            vm.showMessage = false;
-            // If the form is not valid don't submit
-            if(form.$invalid) {
-                console.log('The form is not valid');
-                return;
-            }
-
-            MenuService.getFavoriteDish(vm.user.favoriteDish).then(function(response) {
-                vm.user.favoriteDishDetails = response.data;
-                console.log(vm.favoriteDish);
-                MenuService.saveUser(vm.user);
-                vm.showMessage = true;
-            }, function(error) {
-                console.log(error);
-                vm.showError = true;
+      signUpCtrl.submit = function () {
+        signUpCtrl.favoriteError = "";
+        try {
+            MenuService.getMenuItem(signUpCtrl.dishShortName).then(function (favoriteItem) {
+                if (favoriteItem) {
+                    signUpCtrl.user.favorite = favoriteItem;
+                    UserService.register(signUpCtrl.user);
+                    signUpCtrl.registered = true;
+                } else {
+                    treatItemError("Item not found");
+                }
+            }).catch(function (error) {
+                treatItemError(error);
             });
-
+        } catch (error) {
+            treatItemError(error);
         }
-    };
+      }
 
-
-    signupController.$inject = ['MenuService'];
-    angular.module('public').controller('SignupController', signupController);
-})();
+      function treatItemError(error) {
+        console.log("treatItemError", error);
+        signUpCtrl.favoriteError = error;
+      }
+    }
+    
+    })();
+    
