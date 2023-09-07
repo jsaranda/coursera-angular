@@ -1,9 +1,9 @@
 (function () {
     "use strict";
-    
+
     angular.module('public')
     .controller('SignUpController', SignUpController);
-    
+
     SignUpController.$inject = ['UserService', 'MenuService'];
     function SignUpController(UserService, MenuService) {
       var signUpCtrl = this;
@@ -33,9 +33,8 @@
 
       function treatItemError(error) {
         console.log("treatItemError", error);
-        signUpCtrl.favoriteError = error;
+        signUpCtrl.favoriteError = "No such menu number exists";
       }
     }
-    
+
     })();
-    
